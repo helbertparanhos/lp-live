@@ -210,6 +210,16 @@
         <form id="whatsappForm">
           <div class="mb-3">
             <input
+              id="leadNome"
+              type="text"
+              placeholder="Seu nome completo"
+              required
+              autocomplete="name"
+              class="w-full px-4 py-4 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-600 text-base font-light outline-none transition-shadow duration-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-900 shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
+            >
+          </div>
+          <div class="mb-3">
+            <input
               id="leadWhatsapp"
               type="tel"
               placeholder="(XX) XXXXX-XXXX"
@@ -262,6 +272,7 @@
     const leadForm = document.getElementById('leadForm');
     const leadEmail = document.getElementById('leadEmail');
     const whatsappForm = document.getElementById('whatsappForm');
+    const leadNome = document.getElementById('leadNome');
     const leadWhatsapp = document.getElementById('leadWhatsapp');
     const popup = document.getElementById('leadPopup');
     const popupStep1 = document.getElementById('popupStep1');
@@ -273,7 +284,9 @@
     const FUNNEL = 'masterclass_claudecode_helbert';
 
     let submittedEmail = '';
+    let submittedNome = '';
     let submittedWhatsapp = '';
+    const pageUrl = window.location.href;
 
     // --- WhatsApp mask: (XX) XXXXX-XXXX ---
     leadWhatsapp.addEventListener('input', function() {
@@ -314,6 +327,7 @@
     // --- STEP 2: WhatsApp submit → webhook + sucesso ---
     whatsappForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      submittedNome = leadNome.value;
       submittedWhatsapp = leadWhatsapp.value;
 
       fetch(WEBHOOK_URL, {
@@ -323,7 +337,9 @@
           type: 'form-lead',
           funnel: FUNNEL,
           email: submittedEmail,
+          nome: submittedNome,
           whatsapp: submittedWhatsapp,
+          url: pageUrl,
           ...utmParams,
         }),
       }).catch(function() {});
