@@ -44,6 +44,7 @@
   </script>
   <style>
     * { font-family: 'Saira', sans-serif; }
+    .input-error { border-color: rgb(239 68 68) !important; box-shadow: 0 0 0 2px rgba(239,68,68,0.2) !important; }
 
     @keyframes float {
       0%, 100% { transform: translateY(0); }
@@ -131,6 +132,7 @@
             autocomplete="email"
             class="w-full px-4 sm:px-5 py-4 rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-600 text-base font-light outline-none transition-shadow duration-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-900 shadow-[0_1px_3px_rgba(0,0,0,0.3)]"
           >
+          <p id="emailError" class="hidden mt-2 text-xs text-red-400 font-light">E-mail inválido. Ex: nome@dominio.com.br</p>
         </div>
         <button
           type="submit"
@@ -278,6 +280,16 @@
     const popupStep1 = document.getElementById('popupStep1');
     const popupStep2 = document.getElementById('popupStep2');
     const confirmedWhatsapp = document.getElementById('confirmedWhatsapp');
+    const emailError = document.getElementById('emailError');
+
+    function isValidEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+    }
+
+    leadEmail.addEventListener('input', function() {
+      emailError.classList.add('hidden');
+      leadEmail.classList.remove('input-error');
+    });
 
     const WEBHOOK_URL = 'https://n8nwebhook.strat.tec.br/webhook/31d85ee0-7459-41c5-be29-6c423d8affd6';
     const REDIRECT_URL = 'https://links.stratacademy.com.br/comunidade';
@@ -317,8 +329,16 @@
     // --- STEP 1: Email submit → abrir popup ---
     leadForm.addEventListener('submit', function(e) {
       e.preventDefault();
-      submittedEmail = leadEmail.value;
+      const email = leadEmail.value.trim();
 
+      if (!isValidEmail(email)) {
+        emailError.classList.remove('hidden');
+        leadEmail.classList.add('input-error');
+        leadEmail.focus();
+        return;
+      }
+
+      submittedEmail = email;
       popup.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
       leadWhatsapp.focus();
